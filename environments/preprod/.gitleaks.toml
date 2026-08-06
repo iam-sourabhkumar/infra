@@ -1,0 +1,7 @@
+title = "Custom Rules"
+
+[[rules]]
+id = "terraform-admin-password"
+description = "Terraform hardcoded admin_password"
+regex = '''(?i)admin_password\s*=\s*["'][^"']+["']'''
+tags = ["terraform", "password", "credential"]
