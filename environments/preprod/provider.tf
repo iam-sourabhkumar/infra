@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "azurerm" {
-    resource_group_name  = "sks01-dev"
+    resource_group_name  = "sourabh-rgn"
     storage_account_name = "stchorpreprod"
     container_name       = "tfstate"
     key                  = "preprod.terraform.tfstate"
