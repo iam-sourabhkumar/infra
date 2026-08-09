@@ -10,7 +10,7 @@ terraform {
     storage_account_name = "stchorpreprod"
     container_name       = "tfstate"
     key                  = "prod.terraform.tfstate"
-  } 
+  }
 }
 
 provider "azurerm" {

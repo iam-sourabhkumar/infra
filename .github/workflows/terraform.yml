@@ -21,6 +21,12 @@ jobs:
       run:
         working-directory: environments/preprod
 
+    env:
+      ARM_CLIENT_ID: "091671ae-cde9-471e-a54b-fdab1b356acc"
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET_PREPROD }}
+      ARM_TENANT_ID: "eab6c75b-a4a7-48f2-b25b-0fb9dbab628c"
+      ARM_SUBSCRIPTION_ID: "bcb5e4d2-be91-4fa6-b926-395b2fe85c87"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,19 +35,17 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Azure Login
-        env:
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET_PREPROD }}
         run: |
           az login \
             --service-principal \
-            --username "091671ae-cde9-471e-a54b-fdab1b356acc" \
+            --username "$ARM_CLIENT_ID" \
             --password "$ARM_CLIENT_SECRET" \
-            --tenant "eab6c75b-a4a7-48f2-b25b-0fb9dbab628c"
+            --tenant "$ARM_TENANT_ID"
 
       - name: Set Azure Subscription
         run: |
           az account set \
-            --subscription "bcb5e4d2-be91-4fa6-b926-395b2fe85c87"
+            --subscription "$ARM_SUBSCRIPTION_ID"
 
       - name: Check Azure Login
         run: az account show
@@ -71,6 +75,12 @@ jobs:
       run:
         working-directory: environments/preprod
 
+    env:
+      ARM_CLIENT_ID: "9eac3105-2ec2-4f37-8b90-3d1d851fce11"
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET_PROD }}
+      ARM_TENANT_ID: "0f7010fd-209e-4344-8457-043ffb37143b"
+      ARM_SUBSCRIPTION_ID: "bc9d2c5e-f99f-4142-8f22-8f6dae37180d"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -79,19 +89,17 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Azure Login
-        env:
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET_PROD }}
         run: |
           az login \
             --service-principal \
-            --username "9eac3105-2ec2-4f37-8b90-3d1d851fce11" \
+            --username "$ARM_CLIENT_ID" \
             --password "$ARM_CLIENT_SECRET" \
-            --tenant "0f7010fd-209e-4344-8457-043ffb37143b"
+            --tenant "$ARM_TENANT_ID"
 
       - name: Set Azure Subscription
         run: |
           az account set \
-            --subscription "bc9d2c5e-f99f-4142-8f22-8f6dae37180d"
+            --subscription "$ARM_SUBSCRIPTION_ID"
 
       - name: Check Azure Login
         run: az account show

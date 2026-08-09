@@ -6,7 +6,7 @@ rgs = {
   rg2 = {
     name     = "sks02-dev"
     location = "centralindia"
-}
+  }
 }
 
 vnets = {
