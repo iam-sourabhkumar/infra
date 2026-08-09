@@ -1,0 +1,109 @@
+name: Terraform
+
+on:
+  push:
+    branches:
+      - "**"
+
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: environments/preprod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Azure Login
+        env:
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET_PREPROD }}
+        run: |
+          az login \
+            --service-principal \
+            --username "091671ae-cde9-471e-a54b-fdab1b356acc" \
+            --password "$ARM_CLIENT_SECRET" \
+            --tenant "eab6c75b-a4a7-48f2-b25b-0fb9dbab628c"
+
+      - name: Set Azure Subscription
+        run: |
+          az account set \
+            --subscription "bcb5e4d2-be91-4fa6-b926-395b2fe85c87"
+
+      - name: Check Azure Login
+        run: az account show
+
+      - name: Terraform Format
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan
+
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+
+    needs: terraform-plan
+
+    # Apply ONLY after push to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    defaults:
+      run:
+        working-directory: environments/preprod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Azure Login
+        env:
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET_PROD }}
+        run: |
+          az login \
+            --service-principal \
+            --username "9eac3105-2ec2-4f37-8b90-3d1d851fce11" \
+            --password "$ARM_CLIENT_SECRET" \
+            --tenant "0f7010fd-209e-4344-8457-043ffb37143b"
+
+      - name: Set Azure Subscription
+        run: |
+          az account set \
+            --subscription "bc9d2c5e-f99f-4142-8f22-8f6dae37180d"
+
+      - name: Check Azure Login
+        run: az account show
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
